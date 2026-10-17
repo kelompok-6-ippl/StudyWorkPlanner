@@ -80,7 +80,7 @@ Pastikan perangkat Anda telah terpasang:
 
 ## 🤝 Panduan Kolaborasi Tim & Menjalankan di Mesin Lain (Clone & Run Guide)
 
-Bagian ini ditujukan bagi rekan tim yang baru saja melakukan `git clone` proyek ini ke komputer/laptop mereka:
+Bagian ini ditujukan untuk melakukan `git clone` proyek ini ke komputer/laptop lain:
 
 ### 📋 Checklist Setup Mesin Baru
 - [ ] Git, Node.js (v18+) dan Docker Desktop sudah terpasang.
