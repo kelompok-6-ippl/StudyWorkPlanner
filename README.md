@@ -62,7 +62,7 @@ swp-fullstack/
 
 ## ⚙️ Prasyarat Sistem (Prerequisites)
 
-Pastikan perangkat Anda telah terpasang:
+Pastikan telah terpasang:
 1. **Node.js** versi **v18+** atau **v20+** (Cek dengan: `node -v`)
 2. **NPM** versi **v9+** atau **v10+** (Cek dengan: `npm -v`)
 3. **PostgreSQL Server & pgAdmin** (GUI Database Tool resmi PostgreSQL)
@@ -74,9 +74,7 @@ Pastikan perangkat Anda telah terpasang:
 
 ---
 
-## 🤝 Panduan Kolaborasi Tim & Menjalankan di Mesin Lain (Clone & Run Guide)
-
-Bagian ini ditujukan bagi rekan tim yang baru saja melakukan `git clone` proyek ini ke komputer/laptop mereka:
+## 🤝 Panduan Kolaborasi & Menjalankan di Mesin Lain (Clone & Run Guide)
 
 ### 📋 Checklist Setup Mesin Baru
 - [ ] Git, Node.js (v18+) dan PostgreSQL + pgAdmin sudah terpasang.
@@ -116,10 +114,10 @@ Salin template environment untuk backend:
   cp backend/.env.example backend/.env
   ```
 
-Buka file `backend/.env` dan pastikan URL koneksi sesuai dengan password dan port PostgreSQL Anda di pgAdmin:
+Buka file `backend/.env` dan pastikan URL koneksi sesuai dengan password dan port PostgreSQL di pgAdmin:
 ```env
 PORT=5000
-DATABASE_URL=postgresql://postgres:<PASSWORD_PGADMIN_ANDA>@localhost:5432/studywork_db
+DATABASE_URL=postgresql://postgres:<PASSWORD_PGADMIN>@localhost:5432/studywork_db
 JWT_SECRET=studywork_super_secret_jwt_key_2025
 JWT_EXPIRES_IN=7d
 ```
@@ -146,93 +144,6 @@ Frontend akan aktif di: **`http://localhost:3000`**
 Akses **`http://localhost:3000`** dan login menggunakan:
 * **Email:** `admin@studywork.id`
 * **Password:** `admin123`
-
----
-
-## 🚀 Panduan Menjalankan di Lokal (Step-by-Step Detail)
-
-### Langkah 1: Setup Database Menggunakan GUI Database Tool (pgAdmin)
-
-Seluruh struktur skema (DDL) dan data awal (DML) dibuat dan dikelola secara manual melalui **pgAdmin**:
-
-1. **Buka Aplikasi pgAdmin**:
-   - Jalankan **pgAdmin 4** di komputer Anda dan masukkan master password server jika diminta.
-2. **Buat Database Baru**:
-   - Pada panel pohon di sebelah kiri, rentangkan menu **Servers** $\rightarrow$ klik kanan pada **Databases**.
-   - Pilih **Create** $\rightarrow$ **Database...**.
-   - Masukkan nama database: **`studywork_db`**.
-   - Klik **Save**.
-3. **Eksekusi DDL (Struktur Tabel & Indeks)**:
-   - Klik kanan pada database **`studywork_db`** yang baru dibuat $\rightarrow$ pilih **Query Tool**.
-   - Buka file **`backend/src/db/ddl.sql`** (bisa melalui icon folder / `Ctrl + O`, atau copy seluruh isi file dan paste ke editor).
-   - Klik tombol **Execute / Refresh** (icon Play segitiga atau tekan **F5**).
-   - Pesan sukses akan muncul: *"CREATE TABLE, CREATE INDEX query returned successfully"*.
-4. **Eksekusi DML (Data Awal SuperAdmin & Kategori)**:
-   - Di Query Tool yang sama (atau buka tab Query Tool baru pada `studywork_db`):
-   - Buka file **`backend/src/db/dml.sql`**.
-   - Klik tombol **Execute** (tekan **F5**).
-   - Pesan sukses akan muncul: *"NOTICE: Akun SuperAdmin dan kategori default berhasil di-seed"*.
-
----
-
-### Langkah 2: Sesuaikan Konfigurasi `backend/.env`
-
-Pastikan file `backend/.env` mencocokkan password pgAdmin lokal Anda:
-```env
-DATABASE_URL=postgresql://postgres:<PASSWORD_ANDA>@localhost:5432/studywork_db
-```
-
-### Langkah 3: Jalankan Backend API Server
-
-1. Buka terminal baru dan arahkan ke folder `backend`:
-   ```powershell
-   cd backend
-   ```
-2. Instal seluruh dependensi:
-   ```powershell
-   npm install
-   ```
-3. Jalankan server dalam mode development:
-   ```powershell
-   npm run dev
-   ```
-*Output sukses terminal backend:*
-```text
-🚀 StudyWork Planner Backend running on port 5000
-📡 URL: http://localhost:5000
-Connected to PostgreSQL successfully.
-Database tables verified.
-```
-
----
-
-### Langkah 4: Jalankan Frontend React
-
-1. Buka terminal baru dan arahkan ke folder `frontend`:
-   ```powershell
-   cd frontend
-   ```
-2. Instal seluruh dependensi:
-   ```powershell
-   npm install
-   ```
-3. Jalankan server frontend:
-   ```powershell
-   npm run dev
-   ```
-*Frontend akan aktif di:*
-👉 **`http://localhost:3000`**
-
----
-
-## 🔑 Akun Demo Pengujian Bawaan
-
-* **Akun SuperAdmin:**
-  * **Email:** `admin@studywork.id`
-  * **Password:** `admin123`
-  * *(Memiliki hak akses ke menu Admin Panel untuk mengelola semua data pengguna).*
-* **Akun Mahasiswa:**
-  * Anda dapat langsung klik tombol **Daftar Sekarang** pada halaman login untuk membuat akun mahasiswa baru.
 
 ---
 
