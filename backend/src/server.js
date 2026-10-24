@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 
-const { initDb } = require('./config/db');
+const { checkDbConnection } = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 const taskRoutes = require('./routes/taskRoutes');
@@ -39,11 +39,11 @@ app.use((err, req, res, next) => {
   res.status(500).json({ success: false, message: 'Internal Server Error' });
 });
 
-// Start Server & Auto-init Database
+// Start Server & Check DB Connection
 app.listen(PORT, async () => {
   console.log(`=======================================================`);
   console.log(`🚀 StudyWork Planner Backend running on port ${PORT}`);
-  console.log(`📡 URL: http://localhost:${PORT}`);
+  console.log(`🌐 URL: http://localhost:${PORT}`);
   console.log(`=======================================================`);
-  await initDb();
+  await checkDbConnection();
 });

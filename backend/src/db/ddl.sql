@@ -1,10 +1,19 @@
 -- =====================================================================
--- StudyWork Planner — PostgreSQL Database Schema (SKPL-001-SWP-2025)
+-- StudyWork Planner - PostgreSQL Database DDL (Data Definition Language)
+-- Spesifikasi: SKPL-001-SWP-2025
+--
+-- Petunjuk Eksekusi via GUI Database Tool (pgAdmin):
+-- 1. Buka aplikasi pgAdmin dan hubungkan ke server PostgreSQL Anda.
+-- 2. Buat database baru bernama "studywork_db" (Klik kanan Databases -> Create -> Database...).
+-- 3. Klik kanan database "studywork_db" -> pilih "Query Tool".
+-- 4. Buka file ddl.sql ini (Open File / Ctrl+O) atau Copy-Paste seluruh isinya.
+-- 5. Klik icon "Execute" (tombol Play) atau tekan F5 untuk membuat struktur tabel & indeks.
 -- =====================================================================
 
+-- Aktifkan ekstensi pgcrypto untuk gen_random_uuid() & hashing password
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
--- 1. USERS TABLE
+-- 1. TABEL USERS (Pengguna & Hak Akses)
 CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(255) NOT NULL,
@@ -15,7 +24,7 @@ CREATE TABLE IF NOT EXISTS users (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- 2. CATEGORIES TABLE
+-- 2. TABEL CATEGORIES (Kategori Kuliah & Pribadi)
 CREATE TABLE IF NOT EXISTS categories (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -25,7 +34,7 @@ CREATE TABLE IF NOT EXISTS categories (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- 3. TASKS TABLE
+-- 3. TABEL TASKS (Tugas Deadline, Fixed-time, Routine)
 CREATE TABLE IF NOT EXISTS tasks (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -46,7 +55,7 @@ CREATE TABLE IF NOT EXISTS tasks (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- 4. MOODS TABLE
+-- 4. TABEL MOODS (Log Mood Harian Mahasiswa)
 CREATE TABLE IF NOT EXISTS moods (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -54,7 +63,7 @@ CREATE TABLE IF NOT EXISTS moods (
     logged_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- INDEXES FOR PERFORMANCE
+-- INDEKS KINERJA & OPTIMASI QUERY
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 CREATE INDEX IF NOT EXISTS idx_categories_user_id ON categories(user_id);
 CREATE INDEX IF NOT EXISTS idx_tasks_user_id ON tasks(user_id);

@@ -1,6 +1,4 @@
 const { Pool } = require('pg');
-const fs = require('fs');
-const path = require('path');
 require('dotenv').config();
 
 const pool = new Pool({
@@ -11,7 +9,7 @@ pool.on('error', (err) => {
   console.error('Unexpected error on idle PostgreSQL client:', err);
 });
 
-async function initDb() {
+async function checkDbConnection() {
   try {
     const client = await pool.connect();
     console.log('Connected to PostgreSQL successfully.');
@@ -25,25 +23,25 @@ async function initDb() {
     `);
 
     if (!res.rows[0].exists) {
-      console.log('Tables not found. Initializing schema & seed data...');
-      const schemaSql = fs.readFileSync(path.join(__dirname, '../db/schema.sql'), 'utf8');
-      const seedSql = fs.readFileSync(path.join(__dirname, '../db/seed.sql'), 'utf8');
-      
-      await client.query(schemaSql);
-      await client.query(seedSql);
-      console.log('Database initialized successfully with default SuperAdmin and categories.');
+      console.log('-------------------------------------------------------');
+      console.log('ℹ️  INFO: Tabel database belum dibuat.');
+      console.log('👉 Silakan buka pgAdmin, pilih database "studywork_db", lalu buka Query Tool:');
+      console.log('   1. Buka dan jalankan backend/src/db/ddl.sql (F5)');
+      console.log('   2. Buka dan jalankan backend/src/db/dml.sql (F5)');
+      console.log('-------------------------------------------------------');
     } else {
       console.log('Database tables verified.');
     }
     client.release();
   } catch (error) {
-    console.error('Warning: Could not auto-initialize PostgreSQL database:', error.message);
-    console.log('Please ensure PostgreSQL is running (e.g. via docker compose up -d or local service).');
+    console.error('Warning: Could not connect to PostgreSQL:', error.message);
+    console.log('Please ensure PostgreSQL server is active and accessible via pgAdmin.');
   }
 }
 
 module.exports = {
   query: (text, params) => pool.query(text, params),
   pool,
-  initDb
+  checkDbConnection,
+  initDb: checkDbConnection
 };

@@ -24,3 +24,7 @@ pnpm-debug.log*
 .idea/
 .DS_Store
 Thumbs.db
+*.zip
+
+# Archives files
+_archive/

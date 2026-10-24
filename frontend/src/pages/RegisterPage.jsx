@@ -59,7 +59,7 @@ export default function RegisterPage({ onNavigateToLogin }) {
               className="input"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Contoh: Ringo Noer"
+              placeholder="Contoh: Budi"
               required
             />
           </div>

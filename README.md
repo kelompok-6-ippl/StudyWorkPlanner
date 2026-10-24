@@ -5,7 +5,7 @@ Aplikasi manajemen tugas dan produktivitas cerdas untuk mahasiswa dengan beban t
 Project ini mentransformasikan versi hybrid lama (*WebView + LocalStorage*) menjadi arsitektur **Modern Client-Server Full-Stack**:
 * **Frontend:** **React 18** (Vite SPA) + Mobile-first UI Design System + Lucide Icons.
 * **Backend API:** **Node.js** + **Express.js** + JWT Authentication + Bcrypt.
-* **Database:** **PostgreSQL 16** (Relational DDL, Foreign Keys with Cascading Delete, Indexes).
+* **Database:** **PostgreSQL** (Dikelola & diinisialisasi melalui GUI Database Tool **pgAdmin**).
 * **Core Engines:**
   - 🧮 **Priority Engine (FR-02):** Perhitungan prioritas otomatis berbasis rumus $Urgency \times Impact \times DifficultyModifier$ dengan klasifikasi `TOP`, `HIGH`, `MEDIUM`, `LOW`.
   - ⚠️ **Conflict & Buffer Detection (FR-04):** Deteksi tabrakan waktu, peringatan jeda istirahat $< 30$ menit, peringatan *overcommitment* ($> 8$ jam/hari), dan generator slot waktu saran otomatis.
@@ -18,20 +18,19 @@ Project ini mentransformasikan versi hybrid lama (*WebView + LocalStorage*) menj
 
 ```text
 swp-fullstack/
-├── docker-compose.yml              # Konfigurasi container PostgreSQL 16
 ├── README.md                       # Dokumentasi dan panduan pengujian
 │
 ├── backend/                        # Server REST API & Core Engines
 │   ├── package.json
-│   ├── .env.example
+│   ├── .env.example                # Template konfigurasi environment (koneksi pgAdmin)
 │   ├── .env
 │   ├── src/
 │   │   ├── server.js               # Entry point Express
 │   │   ├── config/
-│   │   │   └── db.js               # Pool koneksi PostgreSQL & auto-init
+│   │   │   └── db.js               # Pool koneksi PostgreSQL & status checker
 │   │   ├── db/
-│   │   │   ├── schema.sql          # DDL tabel, constraint, & indeks
-│   │   │   └── seed.sql            # Akun SuperAdmin & kategori default
+│   │   │   ├── ddl.sql             # DDL tabel, constraint, & indeks (Eksekusi di pgAdmin)
+│   │   │   └── dml.sql             # DML data awal SuperAdmin & kategori (Eksekusi di pgAdmin)
 │   │   ├── engines/                # Porting logika matematika SKPL
 │   │   │   ├── priorityEngine.js   # Priority calculation & sorting
 │   │   │   ├── conflictEngine.js   # Conflict, buffer, & slot suggestion
@@ -66,10 +65,7 @@ swp-fullstack/
 Pastikan perangkat Anda telah terpasang:
 1. **Node.js** versi **v18+** atau **v20+** (Cek dengan: `node -v`)
 2. **NPM** versi **v9+** atau **v10+** (Cek dengan: `npm -v`)
-3. Salah satu opsi database **PostgreSQL**:
-   - **Opsi A (Paling Mudah):** **Docker Desktop** (Port `5433`, cek dengan: `docker -v`)
-   - **Opsi B:** **PostgreSQL Server Lokal** (port `5432` atau `5433`)
-   - **Opsi C:** **Cloud PostgreSQL** gratis (misal: [Neon.tech](https://neon.tech) atau [Supabase](https://supabase.com))
+3. **PostgreSQL Server & pgAdmin** (GUI Database Tool resmi PostgreSQL)
 
 > [!IMPORTANT]
 > **Tips Windows & Google Drive:**  
@@ -80,13 +76,14 @@ Pastikan perangkat Anda telah terpasang:
 
 ## 🤝 Panduan Kolaborasi Tim & Menjalankan di Mesin Lain (Clone & Run Guide)
 
-Bagian ini ditujukan untuk melakukan `git clone` proyek ini ke komputer/laptop lain:
+Bagian ini ditujukan bagi rekan tim yang baru saja melakukan `git clone` proyek ini ke komputer/laptop mereka:
 
 ### 📋 Checklist Setup Mesin Baru
-- [ ] Git, Node.js (v18+) dan Docker Desktop sudah terpasang.
+- [ ] Git, Node.js (v18+) dan PostgreSQL + pgAdmin sudah terpasang.
 - [ ] Repository sudah di-clone ke drive lokal (hindari network/cloud drive).
-- [ ] File `backend/.env` sudah disiapkan dari `backend/.env.example`.
-- [ ] Container PostgreSQL sudah menyala via Docker (`docker compose up -d`).
+- [ ] Database `studywork_db` sudah dibuat di pgAdmin.
+- [ ] DDL (`backend/src/db/ddl.sql`) dan DML (`backend/src/db/dml.sql`) sudah dieksekusi di pgAdmin.
+- [ ] File `backend/.env` sudah disiapkan dan dicocokkan dengan kredensial pgAdmin.
 - [ ] Dependensi backend & frontend sudah di-install (`npm install`).
 - [ ] Backend dan Frontend sudah berjalan (`npm run dev`).
 
@@ -100,7 +97,15 @@ git clone <URL_REPOSITORY_GITHUB>
 cd swp-fullstack
 ```
 
-#### 2. Siapkan File Konfigurasi Environment (`.env`)
+#### 2. Buat Database & Eksekusi DDL & DML di pgAdmin
+1. Buka aplikasi **pgAdmin**.
+2. Di panel kiri, klik kanan pada **Databases** $\rightarrow$ pilih **Create** $\rightarrow$ **Database...**.
+3. Beri nama: **`studywork_db`** lalu klik **Save**.
+4. Klik kanan database **`studywork_db`** $\rightarrow$ pilih **Query Tool**.
+5. Buka file **`backend/src/db/ddl.sql`** (Ctrl + O) $\rightarrow$ klik icon **Execute** (atau tekan **F5**) untuk membuat tabel & indeks.
+6. Buka file **`backend/src/db/dml.sql`** (Ctrl + O) $\rightarrow$ klik icon **Execute** (atau tekan **F5**) untuk mengisi data awal.
+
+#### 3. Siapkan File Konfigurasi Environment (`backend/.env`)
 Salin template environment untuk backend:
 * **Windows (PowerShell / Command Prompt):**
   ```powershell
@@ -111,15 +116,13 @@ Salin template environment untuk backend:
   cp backend/.env.example backend/.env
   ```
 
-*(File `backend/.env` bawaan sudah disetel ke database PostgreSQL port `5433` dengan kredensial default `postgres:postgrespassword`).*
-
-#### 3. Nyalakan Database PostgreSQL dengan Docker
-Pastikan aplikasi **Docker Desktop** sudah menyala di background, lalu jalankan:
-```bash
-docker compose up -d
+Buka file `backend/.env` dan pastikan URL koneksi sesuai dengan password dan port PostgreSQL Anda di pgAdmin:
+```env
+PORT=5000
+DATABASE_URL=postgresql://postgres:<PASSWORD_PGADMIN_ANDA>@localhost:5432/studywork_db
+JWT_SECRET=studywork_super_secret_jwt_key_2025
+JWT_EXPIRES_IN=7d
 ```
-> [!NOTE]
-> Docker akan otomatis mengunduh PostgreSQL 16, membuat tabel-tabel (`schema.sql`), dan memasukkan data akun SuperAdmin bawaan (`seed.sql`). Port yang digunakan adalah **`5433`** sehingga **aman dan tidak akan bentrok** dengan instalasi PostgreSQL lokal yang biasanya memakai port 5432.
 
 #### 4. Jalankan Backend API Server
 Buka terminal dan jalankan:
@@ -148,30 +151,38 @@ Akses **`http://localhost:3000`** dan login menggunakan:
 
 ## 🚀 Panduan Menjalankan di Lokal (Step-by-Step Detail)
 
-### Langkah 1: Jalankan Database PostgreSQL
+### Langkah 1: Setup Database Menggunakan GUI Database Tool (pgAdmin)
 
-#### Opsi 1A — Menggunakan Docker Compose (Sangat Direkomendasikan)
-Buka terminal di root folder `swp-fullstack/` (misal di `C:\StudiWorkPlanner\swp-fullstack`) lalu jalankan:
+Seluruh struktur skema (DDL) dan data awal (DML) dibuat dan dikelola secara manual melalui **pgAdmin**:
 
-```powershell
-docker compose up -d
-```
-*Perintah ini akan menyalakan container PostgreSQL 16 di port `5433` (bebas konflik) dan otomatis menginisialisasi skema tabel (`schema.sql`) serta akun bawaan (`seed.sql`).*
-
-#### Opsi 1B — Menggunakan PostgreSQL Server Lokal yang Sudah Terpasang
-1. Buat database baru bernama `studywork_db` di PostgreSQL Anda (misal via DBeaver atau pgAdmin):
-   ```sql
-   CREATE DATABASE studywork_db;
-   ```
-2. Sesuaikan konfigurasi koneksi di file `backend/.env`:
-   ```env
-   DATABASE_URL=postgresql://<username>:<password>@localhost:5433/studywork_db
-   ```
-*(Saat backend dijalankan pertama kali, backend akan otomatis mendeteksi dan mengeksekusi skema serta seed data secara mandiri).*
+1. **Buka Aplikasi pgAdmin**:
+   - Jalankan **pgAdmin 4** di komputer Anda dan masukkan master password server jika diminta.
+2. **Buat Database Baru**:
+   - Pada panel pohon di sebelah kiri, rentangkan menu **Servers** $\rightarrow$ klik kanan pada **Databases**.
+   - Pilih **Create** $\rightarrow$ **Database...**.
+   - Masukkan nama database: **`studywork_db`**.
+   - Klik **Save**.
+3. **Eksekusi DDL (Struktur Tabel & Indeks)**:
+   - Klik kanan pada database **`studywork_db`** yang baru dibuat $\rightarrow$ pilih **Query Tool**.
+   - Buka file **`backend/src/db/ddl.sql`** (bisa melalui icon folder / `Ctrl + O`, atau copy seluruh isi file dan paste ke editor).
+   - Klik tombol **Execute / Refresh** (icon Play segitiga atau tekan **F5**).
+   - Pesan sukses akan muncul: *"CREATE TABLE, CREATE INDEX query returned successfully"*.
+4. **Eksekusi DML (Data Awal SuperAdmin & Kategori)**:
+   - Di Query Tool yang sama (atau buka tab Query Tool baru pada `studywork_db`):
+   - Buka file **`backend/src/db/dml.sql`**.
+   - Klik tombol **Execute** (tekan **F5**).
+   - Pesan sukses akan muncul: *"NOTICE: Akun SuperAdmin dan kategori default berhasil di-seed"*.
 
 ---
 
-### Langkah 2: Jalankan Backend API Server
+### Langkah 2: Sesuaikan Konfigurasi `backend/.env`
+
+Pastikan file `backend/.env` mencocokkan password pgAdmin lokal Anda:
+```env
+DATABASE_URL=postgresql://postgres:<PASSWORD_ANDA>@localhost:5432/studywork_db
+```
+
+### Langkah 3: Jalankan Backend API Server
 
 1. Buka terminal baru dan arahkan ke folder `backend`:
    ```powershell
@@ -195,7 +206,7 @@ Database tables verified.
 
 ---
 
-### Langkah 3: Jalankan Frontend React
+### Langkah 4: Jalankan Frontend React
 
 1. Buka terminal baru dan arahkan ke folder `frontend`:
    ```powershell
