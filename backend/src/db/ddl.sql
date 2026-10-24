@@ -10,9 +10,6 @@
 -- 5. Klik icon "Execute" (tombol Play) atau tekan F5 untuk membuat struktur tabel & indeks.
 -- =====================================================================
 
--- Aktifkan ekstensi pgcrypto untuk gen_random_uuid() & hashing password
-CREATE EXTENSION IF NOT EXISTS "pgcrypto";
-
 -- 1. TABEL USERS (Pengguna & Hak Akses)
 CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

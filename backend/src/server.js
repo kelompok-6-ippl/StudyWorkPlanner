@@ -35,15 +35,12 @@ app.get('/api/health', (req, res) => {
 
 // Global error handler
 app.use((err, req, res, next) => {
-  console.error('Unhandled Server Error:', err);
+  console.error('Server Error:', err.message);
   res.status(500).json({ success: false, message: 'Internal Server Error' });
 });
 
-// Start Server & Check DB Connection
+// Start Server
 app.listen(PORT, async () => {
-  console.log(`=======================================================`);
-  console.log(`🚀 StudyWork Planner Backend running on port ${PORT}`);
-  console.log(`🌐 URL: http://localhost:${PORT}`);
-  console.log(`=======================================================`);
+  console.log(`StudyWork Planner Backend running on port ${PORT}`);
   await checkDbConnection();
 });

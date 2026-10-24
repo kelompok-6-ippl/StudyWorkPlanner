@@ -122,7 +122,7 @@ function checkConflicts(candidate, existingTasks, userCapacity = 8.0, now = Date
     const dlTime = new Date(candidate.deadline).getTime();
     for (
       let d = startOfDay(now);
-      d <= Math.max(startOfDay(now()), startOfDay(dlTime)) && days.size < 14;
+      d <= Math.max(startOfDay(now), startOfDay(dlTime)) && days.size < 14;
       d += DAY
     ) {
       days.add(d);

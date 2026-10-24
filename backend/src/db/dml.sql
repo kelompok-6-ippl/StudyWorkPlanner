@@ -23,8 +23,8 @@ BEGIN
         VALUES (
             'Super Admin',
             'admin@studywork.id',
-            -- Uses pgcrypto bcrypt hash for 'admin123'
-            crypt('admin123', gen_salt('bf', 8)),
+            -- Precomputed bcrypt hash untuk 'admin123' (tanpa dependensi pgcrypto)
+            '$2a$10$CaXBgLuDznHylf8.5540h.VxUg3NfLfyps/Bwh.FVMFrd8uCrARv.',
             'superadmin',
             8.0
         ) RETURNING id INTO admin_id;
@@ -48,7 +48,8 @@ BEGIN
         VALUES (
             'Mahasiswa Demo',
             'demo@studywork.id',
-            crypt('demo123', gen_salt('bf', 8)),
+            -- Precomputed bcrypt hash untuk 'demo123'
+            '$2a$10$xMfvXqNS9wUywsuqooBsquzsn6m4q7CN3f3cODmojzVTShIc6b2Ci',
             'mahasiswa',
             8.0
         ) RETURNING id INTO student_id;
